@@ -32,6 +32,7 @@
         "./Lib/*.d.ts",
         "./*.d.ts",
         "./*.ts",
+        "./*.config.js"
     ],
     "exclude": [
         "./node_modules",
