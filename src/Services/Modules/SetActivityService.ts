@@ -1,9 +1,10 @@
-import { SSN } from '../../Client';
-import { ServiceStructure } from '../../Structures/';
+import { SSN } from '../../ssn';
+import { ServiceStructure } from '../../structures';
+import { Logger } from '../../utils/logger';
 
 export default class setActivityService extends ServiceStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: 'setActivity',
             initialize: true
         });
@@ -22,13 +23,13 @@ export default class setActivityService extends ServiceStructure {
 
             setInterval(() => {
                 const activity = { name: activityArray[x++ % activityArray.length], type: typeArray[y++ % typeArray.length] };
-                this.client.user?.setPresence({ status: 'online', activities: [activity] });
+                this.controller.discord.user?.setPresence({ status: 'online', activities: [activity] });
             }, 1000 * time);
 
-            this.client.logger.info(`${this.client.user?.username} presence has been successfully set.`, 'Presence');
+            Logger.info(`${this.controller.discord.user?.username} presence has been successfully set.`, 'Presence');
         } catch (err) {
-            this.client.logger.error((err as Error).message, setActivityService.name);
-            this.client.logger.warn((err as Error).stack as string, setActivityService.name);
+            Logger.error((err as Error).message, setActivityService.name);
+            Logger.warn((err as Error).stack as string, setActivityService.name);
         }
     }
 }

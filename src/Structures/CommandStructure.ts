@@ -1,6 +1,6 @@
-import { SSN } from '../Client';
-import { PermissionResolvable, ApplicationCommandType, Awaitable } from 'discord.js';
 import { type RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord-api-types/v10';
+import { ApplicationCommandType, Awaitable, Message, OmitPartialGroupDMChannel, PermissionResolvable } from 'discord.js';
+import { SSN } from '../ssn';
 
 interface RawCommandData extends RESTPostAPIChatInputApplicationCommandsJSONBody {
     name: string;
@@ -30,11 +30,11 @@ abstract class CommandData {
 }
 
 abstract class CommandStructure {
-    client: SSN;
+    controller: SSN;
     data: CommandData;
 
-    constructor(client: SSN, data: CommandData) {
-        this.client = client;
+    constructor(controller: SSN, data: CommandData) {
+        this.controller = controller;
         this.data = data;
 
         this.validateOptions();
@@ -50,9 +50,7 @@ abstract class CommandStructure {
         }
     }
 
-    commandExecute(...args: any[]): Awaitable<any> {
-        return { args };
-    }
+    abstract commandExecute({ message, args, prefix }: { message: OmitPartialGroupDMChannel<Message>, args: string[], prefix: string }): Awaitable<Message | void> | Message | void
 }
 
-export { CommandStructure, CommandData, RawCommandData };
+export { CommandData, CommandStructure, RawCommandData };

@@ -1,11 +1,13 @@
-import { SSN } from '../Client';
-import { ModuleStructure, ServiceStructure } from '../Structures/';
+import { ModuleStructure, ServiceStructure } from '../structures';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { Logger } from '../utils/logger';
+import { Util } from '../utils/util';
+import { SSN } from '../ssn';
 
 export default class Services extends ModuleStructure {
-    constructor(client: SSN) {
-        super(client);
+    constructor(controller: SSN) {
+        super(controller);
     }
 
     async moduleExecute() {
@@ -15,10 +17,10 @@ export default class Services extends ModuleStructure {
 
             for (const file of serviceFolder) {
                 const { default: ServiceClass }: { default: new (client: SSN) => ServiceStructure } = await import(`../Services/Modules/${file}`);
-                const service = new ServiceClass(this.client);
+                const service = new ServiceClass(this.controller);
 
                 if (service.data) {
-                    this.client.services.set(service.data.name, service);
+                    this.controller.discord.services.set(service.data.name, service);
 
                     if (service.data.initialize) {
                         initializeServices.push(service);
@@ -27,13 +29,13 @@ export default class Services extends ModuleStructure {
             }
 
             for (const service of initializeServices) {
-                await this.client.utils.executeService(service);
+                await Util.executeService(service);
             }
 
-            this.client.logger.info('Services loaded successfully.', 'Services');
+            Logger.info('Services loaded successfully.', 'Services');
         } catch (err) {
-            this.client.logger.error((err as Error).message, Services.name);
-            this.client.logger.warn((err as Error).stack as string, Services.name);
+            Logger.error((err as Error).message, Services.name);
+            Logger.warn((err as Error).stack as string, Services.name);
         }
     }
 }

@@ -1,21 +1,21 @@
-import { SSN } from '../../Client';
-import { CommandStructure, ClientEmbed } from '../../Structures';
+import { SSN } from '../../ssn';
+import { CommandStructure, ClientEmbed } from '../../structures';
 import { AvatarCommandData } from '../../Data/Commands/Utilities/AvatarCommandData';
-import { Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember } from 'discord.js';
+import { Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, OmitPartialGroupDMChannel } from 'discord.js';
 
 export default class avatarCommand extends CommandStructure {
-    constructor(client: SSN) {
-        super(client, AvatarCommandData);
+    constructor(controller: SSN) {
+        super(controller, AvatarCommandData);
     }
 
-    async commandExecute({ message, args }: { message: Message, args: string[] }) {
-        const user = message.mentions?.users.first() || await this.client.users.fetch(args[0]).catch(() => undefined) || message.author;
+    async commandExecute({ message, args }: { message: OmitPartialGroupDMChannel<Message>, args: string[] }): Promise<void> {
+        const user = message.mentions?.users.first() || await this.controller.discord.users.fetch(args[0]).catch(() => undefined) || message.author;
 
         if (args[0] == 'avatar') {
             const member = message.guild?.members.cache.get(user.id) as GuildMember;
             const avatar = member.displayAvatarURL({ extension: 'png', size: 4096 });
 
-            const embed = new ClientEmbed(true, this.client)
+            const embed = new ClientEmbed(true, this.controller.discord)
                 .setTitle('📷 Avatar de Perfil')
                 .addFields({ name: 'Avatar de:', value: `\`${member.user.username}\``, inline: true })
                 .setImage(avatar);
@@ -27,11 +27,11 @@ export default class avatarCommand extends CommandStructure {
                 .setStyle(ButtonStyle.Link);
 
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
-            return message.reply({ embeds: [embed], components: [row] });
+            return void message.reply({ embeds: [embed], components: [row] });
         } else {
             const avatar = user.displayAvatarURL({ extension: 'png', size: 4096 });
 
-            const embed = new ClientEmbed(true, this.client)
+            const embed = new ClientEmbed(true, this.controller.discord)
                 .setTitle('📷 Avatar de Perfil')
                 .addFields({ name: 'Avatar de:', value: `\`${user.username}\``, inline: true })
                 .setImage(avatar);
@@ -43,7 +43,7 @@ export default class avatarCommand extends CommandStructure {
                 .setStyle(ButtonStyle.Link);
 
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
-            return message.reply({ embeds: [embed], components: [row] });
+            return void message.reply({ embeds: [embed], components: [row] });
         }
     }
 }

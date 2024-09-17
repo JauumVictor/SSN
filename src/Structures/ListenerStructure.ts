@@ -1,19 +1,19 @@
-import { SSN } from '../Client';
-import { ClientEvents, Awaitable } from 'discord.js';
+import { ClientEvents } from 'discord.js';
+import { SSN } from '../ssn';
 
-type EventOptions = {
+interface EventOptions {
     name: keyof ClientEvents;
     once?: boolean;
-};
+}
 
 export abstract class ListenerStructure {
-    readonly client: SSN;
-    readonly options: EventOptions;
+    public readonly controller: SSN;
+    public readonly options: EventOptions;
 
-    constructor(client: SSN, options: EventOptions) {
-        this.client = client;
+    public constructor(controller: SSN, options: EventOptions) {
+        this.controller = controller;
         this.options = options;
     }
 
-    abstract eventExecute(...args: ClientEvents[keyof ClientEvents]): Awaitable<void> | void;
+    public abstract eventExecute(...args: ClientEvents[keyof ClientEvents]): Promise<void> | void;
 }

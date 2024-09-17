@@ -1,10 +1,11 @@
-import { SSN } from '../../Client';
-import { ListenerStructure, ClientEmbed } from '../../Structures/';
-import { Collection, PermissionFlagsBits, ApplicationCommandOptionType, Events, TextChannel, Interaction, GuildMember, InteractionReplyOptions, MessagePayload, InteractionEditReplyOptions, MessageResolvable } from 'discord.js';
+import { ApplicationCommandOptionType, Collection, Events, GuildMember, Interaction, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessagePayload, MessageResolvable, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { SSN } from '../../ssn';
+import { ClientEmbed, ListenerStructure } from '../../structures';
+import { Logger } from '../../utils/logger';
 
 export default class interactionCreateListener extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.InteractionCreate
         });
     }
@@ -61,17 +62,17 @@ export default class interactionCreateListener extends ListenerStructure {
                     }
                 });
 
-                const command = this.client.commands.get(interaction.commandName);
+                const command = this.controller.discord.commands.get(interaction.commandName);
 
                 if (command) {
                     try {
                         //===============> Cooldown:
-                        if (!this.client.cooldowns.has(command.data.options.name)) {
-                            this.client.cooldowns.set(command.data.options.name, new Collection());
+                        if (!this.controller.discord.cooldowns.has(command.data.options.name)) {
+                            this.controller.discord.cooldowns.set(command.data.options.name, new Collection());
                         }
 
                         const now = Date.now();
-                        const timestamps = this.client.cooldowns.get(command.data.options.name);
+                        const timestamps = this.controller.discord.cooldowns.get(command.data.options.name);
                         const cooldownAmount = (command.data.options.config.cooldown || 2) * 1000;
 
                         if (timestamps?.has(interaction.user.id)) {
@@ -83,13 +84,13 @@ export default class interactionCreateListener extends ListenerStructure {
                             }
                         }
 
-                        if (!this.client.developers.includes(interaction.user.id)) {
+                        if (!this.controller.discord.developers.includes(interaction.user.id)) {
                             timestamps?.set(interaction.user.id, now);
                             setTimeout(() => timestamps?.delete(interaction.user.id), cooldownAmount);
                         }
 
-                        if (command.data.options.config.devOnly && !this.client.developers.some((id) => [id].includes(interaction.user.id))) {
-                            return void interaction.reply({ content: `${interaction.user}, este comando é reservado apenas aos desenvolvedores do ${this.client.user}.`, ephemeral: true });
+                        if (command.data.options.config.devOnly && !this.controller.discord.developers.some((id) => [id].includes(interaction.user.id))) {
+                            return void interaction.reply({ content: `${interaction.user}, este comando é reservado apenas aos desenvolvedores do ${this.controller.discord.user}.`, ephemeral: true });
                         }
 
                         await interaction.deferReply({ fetchReply: true });
@@ -99,11 +100,11 @@ export default class interactionCreateListener extends ListenerStructure {
                             reply: async (options: string | MessagePayload | InteractionReplyOptions) => await interaction.followUp(options).catch(console.error),
                             edit: async (options: string | MessagePayload | InteractionEditReplyOptions) => await interaction.editReply(options).catch(console.error),
                             delete: async (message?: MessageResolvable) => await interaction.deleteReply(message)
-                        });
+                        }) as unknown as OmitPartialGroupDMChannel<Message>;
 
                         //===============> Checando permissões dos membros e do cliente:
 
-                        const checkPermissions = this.client.services.get('checkPermissions');
+                        const checkPermissions = this.controller.discord.services.get('checkPermissions');
 
                         // Verificando permissões do membro:
                         const memberPermissions = checkPermissions?.serviceExecute({ message, command });
@@ -122,13 +123,13 @@ export default class interactionCreateListener extends ListenerStructure {
                         });
 
                         interactionExecute.catch((err): void => {
-                            this.client.logger.error(err.message, command.data.options.name);
-                            this.client.logger.warn(err.stack, command.data.options.name);
+                            Logger.error(err.message, command.data.options.name);
+                            Logger.warn(err.stack, command.data.options.name);
 
-                            const errorChannel = this.client.channels.cache.get(process.env.ERROR_CHANNEL) as TextChannel;
+                            const errorChannel = this.controller.discord.channels.cache.get(process.env.ERROR_CHANNEL) as TextChannel;
 
                             if (errorChannel) {
-                                const errorEmbed = new ClientEmbed(true, this.client)
+                                const errorEmbed = new ClientEmbed(true, this.controller.discord)
                                     .setTitle(`${command.data.options.name}`)
                                     .setDescription('```js' + '\n' + err.stack + '\n' + '```');
 
@@ -138,16 +139,16 @@ export default class interactionCreateListener extends ListenerStructure {
                             return void interaction.reply({ content: `${interaction.user}, ocorreu um erro ao utilizar o comando \`${command.data.options.name}\`, os desenvolvedores já estão ciente do erro, aguarde e tente novamente mais tarde.`, ephemeral: true });
                         });
                     } catch (err) {
-                        this.client.logger.error((err as Error).message, interactionCreateListener.name);
-                        this.client.logger.warn((err as Error).stack as string, interactionCreateListener.name);
+                        Logger.error((err as Error).message, interactionCreateListener.name);
+                        Logger.warn((err as Error).stack as string, interactionCreateListener.name);
                     }
                 }
             }
 
             //==============================================//
         } catch (err) {
-            this.client.logger.error((err as Error).message, interactionCreateListener.name);
-            return this.client.logger.warn((err as Error).stack as string, interactionCreateListener.name);
+            Logger.error((err as Error).message, interactionCreateListener.name);
+            return Logger.warn((err as Error).stack as string, interactionCreateListener.name);
         }
     }
 }

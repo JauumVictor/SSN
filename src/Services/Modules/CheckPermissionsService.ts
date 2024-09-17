@@ -1,11 +1,12 @@
-import { SSN } from '../../Client';
-import { flagTexts, FlagKey } from '../../Utils/Objects/flags';
-import { ServiceStructure, ClientEmbed, CommandStructure } from '../../Structures';
+import { SSN } from '../../ssn';
+import { flagTexts, FlagKey } from '../../utils/Objects/flags';
+import { ServiceStructure, ClientEmbed, CommandStructure } from '../../structures';
 import { Message, PermissionsBitField } from 'discord.js';
+import { Logger } from '../../utils/logger';
 
 export default class checkPermissionsService extends ServiceStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: 'checkPermissions',
             initialize: false
         });
@@ -26,8 +27,8 @@ export default class checkPermissionsService extends ServiceStructure {
                     }
                 }
 
-                const embed = new ClientEmbed(true, this.client)
-                    .setAuthor({ name: 'Faltando permissões', iconURL: isBotPermission ? this.client.user?.displayAvatarURL({ extension: 'png', size: 4096 }) : message.author.displayAvatarURL({ extension: 'png', size: 4096 }) })
+                const embed = new ClientEmbed(true, this.controller.discord)
+                    .setAuthor({ name: 'Faltando permissões', iconURL: isBotPermission ? this.controller.discord.user?.displayAvatarURL({ extension: 'png', size: 4096 }) : message.author.displayAvatarURL({ extension: 'png', size: 4096 }) })
                     .setDescription(`${isBotPermission ? `${message.author}, eu sou fraco, me falta` : `${message.author}, você é fraco, lhe falta`} permissões de \`${array.join(', ').replace(/,([^,]*)$/, ' e$1')}\` para executar este comando.`);
 
                 message.reply({ embeds: [embed] });
@@ -44,8 +45,8 @@ export default class checkPermissionsService extends ServiceStructure {
 
             return true;
         } catch (err) {
-            this.client.logger.error((err as Error).message, checkPermissionsService.name);
-            this.client.logger.warn((err as Error).stack as string, checkPermissionsService.name);
+            Logger.error((err as Error).message, checkPermissionsService.name);
+            Logger.warn((err as Error).stack as string, checkPermissionsService.name);
         }
     }
 }

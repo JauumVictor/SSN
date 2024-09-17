@@ -1,16 +1,18 @@
-import { SSN } from '../../Client';
-import { ListenerStructure, ClientEmbed } from '../../Structures';
-import { Message, Collection, PermissionFlagsBits, Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, Colors, GuildChannel, TextChannel } from 'discord.js';
-import { emojis } from '../../Utils/Objects/emojis';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, Colors, Events, GuildChannel, GuildMember, Message, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { SSN } from '../../ssn';
+import { ClientEmbed, ListenerStructure } from '../../structures';
+import { emojis } from '../../utils/Objects/emojis';
+import { Logger } from '../../utils/logger';
+import { Util } from '../../utils/util';
 
 export default class messageCreateListener extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.MessageCreate
         });
     }
 
-    async eventExecute(message: Message): Promise<void> {
+    async eventExecute(message: OmitPartialGroupDMChannel<Message>) {
         if (message.author.bot || !message.guild) return;
 
         try {
@@ -23,7 +25,7 @@ export default class messageCreateListener extends ListenerStructure {
                     .catch(() => undefined);
             }
 
-            if (message.content.match(this.client.utils.GetMention(this.client.user?.id as string))) {
+            if (message.content.match(Util.GetMention(this.controller.discord.user?.id as string))) {
                 const row = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         new ButtonBuilder()
@@ -38,9 +40,9 @@ export default class messageCreateListener extends ListenerStructure {
                             .setLabel('Servidor')
                     );
 
-                const embed = new ClientEmbed(true, this.client)
+                const embed = new ClientEmbed(true, this.controller.discord)
                     .setDescription(`Olá ${message.author}, sou um BOT de gerenciamento para o servidor [Dependency](https://discord.gg/dependency), o meu prefixo é \`${prefix}\`.`)
-                    .setFooter({ text: 'Made by 99hz', iconURL: this.client.user?.displayAvatarURL({ extension: 'png', size: 4096 }) });
+                    .setFooter({ text: 'Made by 99hz', iconURL: this.controller.discord.user?.displayAvatarURL({ extension: 'png', size: 4096 }) });
 
                 return void message.reply({ embeds: [embed], components: [row] });
             }
@@ -49,12 +51,12 @@ export default class messageCreateListener extends ListenerStructure {
 
             if (message.content.startsWith(prefix)) {
                 const [name, ...args] = message.content.slice(prefix.length).trim().split(/ +/g);
-                const command = this.client.commands.get(name) || this.client.commands.find((command) => command.data.options.aliases && command.data.options.aliases.includes(name));
+                const command = this.controller.discord.commands.get(name) || this.controller.discord.commands.find((command) => command.data.options.aliases && command.data.options.aliases.includes(name));
 
                 if (!command) {
                     if (message.content === prefix) return;
 
-                    const searchCommand = this.client.commands.find((command) => new RegExp(name, 'i').test(command.data.options.name));
+                    const searchCommand = this.controller.discord.commands.find((command) => new RegExp(name, 'i').test(command.data.options.name));
 
                     if (!searchCommand) {
                         return void message.reply({ content: `Não consegui encontrar nenhum comando chamado: \`${name}\`.` })
@@ -69,11 +71,11 @@ export default class messageCreateListener extends ListenerStructure {
 
                 //===============> Cooldowns <===============//
 
-                if (!this.client.cooldowns.has(command.data.options.name)) {
-                    this.client.cooldowns.set(command.data.options.name, new Collection());
+                if (!this.controller.discord.cooldowns.has(command.data.options.name)) {
+                    this.controller.discord.cooldowns.set(command.data.options.name, new Collection());
                 }
                 const now = Date.now();
-                const timestamps = this.client.cooldowns.get(command.data.options.name);
+                const timestamps = this.controller.discord.cooldowns.get(command.data.options.name);
                 const cooldownAmount = (command.data.options.config.cooldown || 2) * 1000;
 
                 if (timestamps?.has(message.author.id)) {
@@ -85,16 +87,16 @@ export default class messageCreateListener extends ListenerStructure {
                     }
                 }
 
-                if (!this.client.developers.includes(message.author.id)) {
+                if (!this.controller.discord.developers.includes(message.author.id)) {
                     timestamps?.set(message.author.id, now);
                     setTimeout(() => timestamps?.delete(message.author.id), cooldownAmount);
                 }
 
-                if (command.data.options.config.devOnly && !this.client.developers.some((id) => [id].includes(message.author.id))) {
-                    return void message.reply({ content: `${message.author}, este comando é reservado apenas aos desenvolvedores do ${this.client.user}.` });
+                if (command.data.options.config.devOnly && !this.controller.discord.developers.some((id) => [id].includes(message.author.id))) {
+                    return void message.reply({ content: `${message.author}, este comando é reservado apenas aos desenvolvedores do ${this.controller.discord.user}.` });
                 }
 
-                const checkPermissions = this.client.services.get('checkPermissions');
+                const checkPermissions = this.controller.discord.services.get('checkPermissions');
 
                 const memberPermissions = checkPermissions?.serviceExecute({ message, command });
                 if (!memberPermissions) return;
@@ -113,14 +115,14 @@ export default class messageCreateListener extends ListenerStructure {
                 });
 
                 commandExecute.catch((err) => {
-                    this.client.logger.error(err.message, command.data.options.name);
-                    this.client.logger.warn(err.stack, command.data.options.name);
+                    Logger.error(err.message, command.data.options.name);
+                    Logger.warn(err.stack, command.data.options.name);
 
-                    const errorChannel = this.client.channels.cache.get(process.env.ERROR_CHANNEL) as TextChannel;
+                    const errorChannel = this.controller.discord.channels.cache.get(process.env.ERROR_CHANNEL) as TextChannel;
 
                     if (errorChannel) {
 
-                        const errorEmbed = new ClientEmbed(true, this.client)
+                        const errorEmbed = new ClientEmbed(true, this.controller.discord)
                             .setColor(Colors.Red)
                             .setTitle(`Command: ${command.data.options.name}`)
                             .setDescription('```js' + '\n' + err.stack + '\n' + '```');
@@ -136,15 +138,15 @@ export default class messageCreateListener extends ListenerStructure {
 
             //===============> Anti-Spam:
             const { default: SpamModule } = await import('../../Modules/SpamModule');
-            new SpamModule(this.client).moduleExecute(message);
+            new SpamModule(this.controller).moduleExecute(message);
             //===============> Anti-Invite:
             const { default: InviteModule } = await import('../../Modules/InviteModule');
-            new InviteModule(this.client).moduleExecute(message);
+            new InviteModule(this.controller).moduleExecute(message);
 
             //========================================//
         } catch (err) {
-            this.client.logger.error((err as Error).message, messageCreateListener.name);
-            this.client.logger.warn((err as Error).stack as string, messageCreateListener.name);
+            Logger.error((err as Error).message, messageCreateListener.name);
+            Logger.warn((err as Error).stack as string, messageCreateListener.name);
         }
     }
 }

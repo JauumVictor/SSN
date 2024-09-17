@@ -1,10 +1,11 @@
-import { SSN } from '../../Client';
-import { ClientEmbed, ListenerStructure } from '../../Structures/';
+import { SSN } from '../../ssn';
+import { ClientEmbed, ListenerStructure } from '../../structures';
 import { Events, GuildMember, PermissionFlagsBits, TextChannel, VoiceChannel } from 'discord.js';
+import { Logger } from '../../utils/logger';
 
 export default class GuildMemberAddListener extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.GuildMemberAdd
         });
     }
@@ -12,18 +13,18 @@ export default class GuildMemberAddListener extends ListenerStructure {
     async eventExecute(member: GuildMember): Promise<void> {
         try {
             member.roles.add(process.env.INITIAL_ROLE).catch(() => { });
-            const guild = this.client.guilds.cache.get(process.env.GUILD_ID);
+            const guild = this.controller.discord.guilds.cache.get(process.env.GUILD_ID);
 
             if (guild) {
                 const guildMembersSize = (guild.memberCount - guild.members.cache.filter((member) => member.user.bot).size);
                 const voiceChannel = guild.channels.cache.get('1150102363797999706') as VoiceChannel;
 
                 if (member.guild.id === process.env.GUILD_ID) {
-                    const generalChannel = this.client.channels.cache.get(process.env.GENERAL_CHANNEL) as TextChannel;
+                    const generalChannel = this.controller.discord.channels.cache.get(process.env.GENERAL_CHANNEL) as TextChannel;
 
                     if (guild?.members.me?.permissions.has(PermissionFlagsBits.ManageGuild)) {
                         const newInvites = await guild.invites.fetch();
-                        const cachedInvites = this.client.invites.get(member.guild.id);
+                        const cachedInvites = this.controller.discord.invites.get(member.guild.id);
 
                         if (cachedInvites) {
                             const usedInvite = newInvites.find((inv) => {
@@ -31,14 +32,14 @@ export default class GuildMemberAddListener extends ListenerStructure {
                                 return invite && invite.uses && inv.uses ? invite.uses < inv.uses : false;
                             });
 
-                            const embed = new ClientEmbed(true, this.client)
+                            const embed = new ClientEmbed(true, this.controller.discord)
                                 .setTitle('Bem-vindo!!')
                                 .setURL(`https://discord.gg/${usedInvite?.code}`)
                                 .setDescription(`\`${member.user.tag}\` entrou no /ssn, convidado(a) por \`${usedInvite?.inviter?.username}\`.\nNº de usos: **${usedInvite?.uses}**`)
                                 .setFooter({ text: guild.name });
 
                             newInvites.each((inv) => cachedInvites?.set(inv.code, inv));
-                            this.client.invites.set(guild.id, cachedInvites);
+                            this.controller.discord.invites.set(guild.id, cachedInvites);
 
                             const channel = guild.channels.cache.get(process.env.INVITE_CHANNEL) as TextChannel;
                             channel.send({ embeds: [embed] });
@@ -55,8 +56,8 @@ export default class GuildMemberAddListener extends ListenerStructure {
                 }
             }
         } catch (err) {
-            this.client.logger.error((err as Error).message, GuildMemberAddListener.name);
-            this.client.logger.warn((err as Error).stack as string, GuildMemberAddListener.name);
+            Logger.error((err as Error).message, GuildMemberAddListener.name);
+            Logger.warn((err as Error).stack as string, GuildMemberAddListener.name);
         }
     }
 }

@@ -1,18 +1,18 @@
-import { SSN } from '../../Client';
-import { CommandStructure, ClientEmbed } from '../../Structures/';
+import { SSN } from '../../ssn';
+import { CommandStructure, ClientEmbed } from '../../structures';
 import { PingCommandData } from '../../Data/Commands/Utilities/PingCommandData';
-import { Colors, Message } from 'discord.js';
+import { Colors, Message, OmitPartialGroupDMChannel } from 'discord.js';
 
 export default class pingCommand extends CommandStructure {
-    constructor(client: SSN) {
-        super(client, PingCommandData);
+    constructor(controller: SSN) {
+        super(controller, PingCommandData);
     }
 
-    commandExecute({ message }: { message: Message }) {
+    commandExecute({ message }: { message: OmitPartialGroupDMChannel<Message> }): void {
         const created = Math.round(Date.now() - message.createdTimestamp);
-        const host = Math.round(this.client.ws.ping);
+        const host = Math.round(this.controller.discord.ws.ping);
 
-        const embed = new ClientEmbed(true, this.client)
+        const embed = new ClientEmbed(true, this.controller.discord)
             .setTitle('Pong! 🏓')
             .setDescription(`💓 **Ping de resposta:** \`${created}\`ms \n` + `🛰️ **Ping da host**: \`${host}\`ms.`);
 

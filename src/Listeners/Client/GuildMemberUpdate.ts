@@ -1,10 +1,11 @@
 import { Events, GuildMember, Message, TextChannel } from 'discord.js';
-import { ClientEmbed, ListenerStructure } from '../../Structures/';
-import { SSN } from '../../Client';
+import { ClientEmbed, ListenerStructure } from '../../structures';
+import { SSN } from '../../ssn';
+import { Logger } from '../../utils/logger';
 
 export default class guildMemberUpdateEvent extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.GuildMemberUpdate
         });
     }
@@ -28,7 +29,7 @@ export default class guildMemberUpdateEvent extends ListenerStructure {
                     .setTitle(`O ${guild.name} ganhou um impulso!`)
                     .setDescription(`O usuário ${newMember} impulsionou o ${guild.name}. 💞`);
 
-                const rSSNved = new ClientEmbed()
+                const removed = new ClientEmbed()
                     .setColor(0xfa85c4)
                     .setTitle(`O ${guild.name} perdeu um impulso..`)
                     .setDescription(`Infelizmente o/a ${newMember} rSSNveu o impulso do ${guild.name}. 💔`);
@@ -43,15 +44,15 @@ export default class guildMemberUpdateEvent extends ListenerStructure {
                         .catch(() => { });
                 }
 
-                // Cargo rSSNvido:
+                // Cargo removido:
                 if (!hasRole && hadRole) {
-                    newMember.guild.members.cache.get(process.env.OWNER_ID)?.send({ content: `Usuário: ${newMember} (${newMember.id})`, embeds: [rSSNved] })
+                    newMember.guild.members.cache.get(process.env.OWNER_ID)?.send({ content: `Usuário: ${newMember} (${newMember.id})`, embeds: [removed] })
                         .catch(() => { });
                 }
             }
         } catch (err) {
-            this.client.logger.error((err as Error).message, guildMemberUpdateEvent.name);
-            this.client.logger.warn((err as Error).stack as string, guildMemberUpdateEvent.name);
+            Logger.error((err as Error).message, guildMemberUpdateEvent.name);
+            Logger.warn((err as Error).stack as string, guildMemberUpdateEvent.name);
         }
     }
 }

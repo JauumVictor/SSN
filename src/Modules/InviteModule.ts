@@ -1,13 +1,14 @@
-import { SSN } from '../Client';
-import { ModuleStructure } from '../Structures/';
-import { ChannelType, GuildMember, Message, PermissionFlagsBits } from 'discord.js';
+import { ModuleStructure } from '../structures';
+import { ChannelType, GuildMember, Message, OmitPartialGroupDMChannel, PermissionFlagsBits } from 'discord.js';
+import { Logger } from '../utils/logger';
+import { SSN } from '../ssn';
 
 export default class inviteModule extends ModuleStructure {
-    constructor(client: SSN) {
-        super(client);
+    constructor(controller: SSN) {
+        super(controller);
     }
 
-    async moduleExecute(message: Message) {
+    async moduleExecute(message: OmitPartialGroupDMChannel<Message>) {
         try {
             if (message.guild && message.channel.type === ChannelType.GuildText) {
                 if (message.channel?.permissionsFor(message.guild.members.me as GuildMember).has(PermissionFlagsBits.ManageGuild)) {
@@ -32,8 +33,8 @@ export default class inviteModule extends ModuleStructure {
                 }
             }
         } catch (err) {
-            this.client.logger.error((err as Error).message, inviteModule.name);
-            this.client.logger.warn((err as Error).stack as string, inviteModule.name);
+            Logger.error((err as Error).message, inviteModule.name);
+            Logger.warn((err as Error).stack as string, inviteModule.name);
         }
     }
 }

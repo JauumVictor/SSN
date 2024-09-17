@@ -1,18 +1,19 @@
-import { Bot } from '../Client';
-import { type UpdateName } from 'puregram/types';
+import { ContextsMapping } from 'puregram/lib/types/mappings';
+import { Known } from 'puregram/types';
+import { SSN } from '../ssn';
 
 type EventOptions = {
-    name: UpdateName;
+    name: keyof Known<ContextsMapping>;
 };
 
 export abstract class TelegramListenerStructure {
-    readonly client: Bot;
+    readonly controller: SSN;
     readonly options: EventOptions;
 
-    constructor(client: Bot, options: EventOptions) {
-        this.client = client;
+    constructor(controller: SSN, options: EventOptions) {
+        this.controller = controller;
         this.options = options;
     }
 
-    abstract eventExecute(...args: any): Promise<any> | any;
+    abstract eventExecute(...args: ContextsMapping[keyof Known<ContextsMapping>][]): Promise<void> | void;
 }

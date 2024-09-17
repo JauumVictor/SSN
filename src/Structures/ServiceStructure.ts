@@ -1,4 +1,4 @@
-import { SSN } from '../Client';
+import { SSN } from '../ssn';
 
 type RawServiceData = {
     name: string;
@@ -9,11 +9,11 @@ type RawServiceData = {
 };
 
 export abstract class ServiceStructure {
-    client: SSN;
+    controller: SSN;
     data: RawServiceData;
 
-    constructor(client: SSN, data: RawServiceData) {
-        this.client = client;
+    constructor(controller: SSN, data: RawServiceData) {
+        this.controller = controller;
         this.data = data;
     }
 

@@ -1,4 +1,4 @@
-import { ClientEmbed } from '../../Structures';
+import { ClientEmbed } from '../../structures';
 
 const rulesEmbed = (): ClientEmbed => {
     return new ClientEmbed()

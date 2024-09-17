@@ -1,17 +1,18 @@
-import { SSN } from '../../Client';
-import { ListenerStructure } from '../../Structures/';
+import { SSN } from '../../ssn';
+import { ListenerStructure } from '../../structures';
 import { Events, GuildMember, PermissionFlagsBits, VoiceChannel } from 'discord.js';
+import { Logger } from '../../utils/logger';
 
 export default class GuildMemberRemoveListener extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.GuildMemberRemove
         });
     }
 
     eventExecute(member: GuildMember): void {
         try {
-            const guild = this.client.guilds.cache.get(process.env.GUILD_ID);
+            const guild = this.controller.discord.guilds.cache.get(process.env.GUILD_ID);
 
             if (guild) {
                 const guildMembersSize = (guild.memberCount - guild.members.cache.filter((member) => member.user.bot).size);
@@ -24,8 +25,8 @@ export default class GuildMemberRemoveListener extends ListenerStructure {
                 }
             }
         } catch (err) {
-            this.client.logger.error((err as Error).message, GuildMemberRemoveListener.name);
-            this.client.logger.warn((err as Error).stack as string, GuildMemberRemoveListener.name);
+            Logger.error((err as Error).message, GuildMemberRemoveListener.name);
+            Logger.warn((err as Error).stack as string, GuildMemberRemoveListener.name);
         }
     }
 }

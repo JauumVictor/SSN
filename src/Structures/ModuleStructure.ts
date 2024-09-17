@@ -1,10 +1,8 @@
-import { SSN } from '../Client';
+import { SSN } from '../ssn';
 
 export abstract class ModuleStructure {
-    readonly client: SSN;
-
-    constructor(client: SSN) {
-        this.client = client;
+    constructor(public readonly controller: SSN) {
+        this.controller = controller;
     }
 
     abstract moduleExecute(...args: any[]): Promise<any> | any;

@@ -17,6 +17,8 @@ declare global {
             GENERAL_CHANNEL: string;
             INVITE_CHANNEL: string;
             INITIAL_ROLE: string;
+            MYSQL_USER: string;
+            MYSQL_PASSWORD: string;
         }
     }
 }

@@ -1,10 +1,11 @@
-import { SSN } from '../../Client';
-import { ListenerStructure } from '../../Structures/';
+import { SSN } from '../../ssn';
+import { ListenerStructure } from '../../structures';
 import { Events, PermissionFlagsBits, VoiceChannel } from 'discord.js';
+import { Logger } from '../../utils/logger';
 
 export default class readyListener extends ListenerStructure {
-    constructor(client: SSN) {
-        super(client, {
+    constructor(controller: SSN) {
+        super(controller, {
             name: Events.ClientReady,
             once: true
         });
@@ -12,13 +13,13 @@ export default class readyListener extends ListenerStructure {
 
     eventExecute(): void {
         try {
-            const guild = this.client.guilds.cache.get(process.env.GUILD_ID);
+            const guild = this.controller.discord.guilds.cache.get(process.env.GUILD_ID);
 
-            this.client.guilds.cache.forEach(async (guild) => {
+            this.controller.discord.guilds.cache.forEach(async (guild) => {
                 if (guild.members.me?.permissions.has(PermissionFlagsBits.ManageGuild)) {
                     const invites = await guild.invites.fetch();
 
-                    invites.each((inv) => this.client.codeUses.set(inv.code, inv));
+                    invites.each((inv) => this.controller.discord.codeUses.set(inv.code, inv));
                 }
             });
 
@@ -32,10 +33,10 @@ export default class readyListener extends ListenerStructure {
             }
 
 
-            this.client.logger.info(`${this.client.user?.username} has been loaded completely.`, 'Ready');
+            Logger.info(`${this.controller.discord.user?.username} has been loaded completely.`, 'Ready');
         } catch (err) {
-            this.client.logger.error((err as Error).message, readyListener.name);
-            this.client.logger.warn((err as Error).stack as string, readyListener.name);
+            Logger.error((err as Error).message, readyListener.name);
+            Logger.warn((err as Error).stack as string, readyListener.name);
         }
     }
 }
