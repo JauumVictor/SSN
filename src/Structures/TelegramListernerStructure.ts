@@ -2,9 +2,9 @@ import { ContextsMapping } from 'puregram/lib/types/mappings';
 import { Known } from 'puregram/types';
 import { SSN } from '../ssn';
 
-type EventOptions = {
+interface EventOptions {
     name: keyof Known<ContextsMapping>;
-};
+}
 
 export abstract class TelegramListenerStructure {
     readonly controller: SSN;

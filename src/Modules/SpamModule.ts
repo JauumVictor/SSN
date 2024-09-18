@@ -10,7 +10,7 @@ interface SpamMap {
     timer: NodeJS.Timeout;
 }
 
-const map: Collection<Snowflake, SpamMap> = new Collection();
+const map = new Collection<Snowflake, SpamMap>();
 
 export default class SpamModule extends ModuleStructure {
     constructor(controller: SSN) {
@@ -69,7 +69,7 @@ export default class SpamModule extends ModuleStructure {
                 }
             } catch (err) {
                 Logger.error((err as Error).message, SpamModule.name);
-                Logger.warn((err as Error).stack as string, SpamModule.name);
+                Logger.warn((err as Error).stack, SpamModule.name);
             }
         }
     }

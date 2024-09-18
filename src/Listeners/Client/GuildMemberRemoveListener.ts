@@ -26,7 +26,7 @@ export default class GuildMemberRemoveListener extends ListenerStructure {
             }
         } catch (err) {
             Logger.error((err as Error).message, GuildMemberRemoveListener.name);
-            Logger.warn((err as Error).stack as string, GuildMemberRemoveListener.name);
+            Logger.warn((err as Error).stack, GuildMemberRemoveListener.name);
         }
     }
 }

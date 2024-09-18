@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS GuildSettings (
-    GuildID VARCHAR(100) NOT NULL,
-    Prefix VARCHAR(10) NOT NULL DEFAULT 's.',
+    guildID VARCHAR(100) NOT NULL,
+    prefix VARCHAR(10) NOT NULL DEFAULT 's.',
     FOREIGN KEY (GuildID) REFERENCES Guilds(GuildID)
 );

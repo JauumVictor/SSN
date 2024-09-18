@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, Colors, Events, GuildChannel, GuildMember, Message, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, Colors, Events, GuildChannel, Message, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
 import { SSN } from '../../ssn';
 import { ClientEmbed, ListenerStructure } from '../../structures';
 import { emojis } from '../../utils/Objects/emojis';
@@ -17,16 +17,17 @@ export default class messageCreateListener extends ListenerStructure {
 
         try {
             const guildData = await this.controller.discord.getData(message.guild.id, 'guild');
-            const prefix = guildData?.Prefix ?? process.env.PREFIX;
+            const prefix = guildData?.prefix ?? process.env.PREFIX;
+            console.log(guildData);
 
             //===============> Menções <===============//
 
-            if (!(message.channel as GuildChannel).permissionsFor(message.guild.members.me as GuildMember)?.has(PermissionFlagsBits.SendMessages)) {
+            if (!(message.channel as GuildChannel).permissionsFor(message.guild.members.me!)?.has(PermissionFlagsBits.SendMessages)) {
                 return void message.member?.send({ content: `${message.author}, não possuo permissões de \`Enviar Mensagens\` neste servidor, contate um administrador.` })
                     .catch(() => undefined);
             }
 
-            if (message.content.match(Util.GetMention(this.controller.discord.user?.id as string))) {
+            if (message.content.match(Util.GetMention(this.controller.discord.user?.id!))) {
                 const row = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         new ButtonBuilder()
@@ -147,7 +148,7 @@ export default class messageCreateListener extends ListenerStructure {
             //========================================//
         } catch (err) {
             Logger.error((err as Error).message, messageCreateListener.name);
-            Logger.warn((err as Error).stack as string, messageCreateListener.name);
+            Logger.warn((err as Error).stack, messageCreateListener.name);
         }
     }
 }

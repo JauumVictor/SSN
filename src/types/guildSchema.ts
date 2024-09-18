@@ -1,11 +1,11 @@
 interface GuildSchema {
-    GuildID: string;
-    GuildName: string;
-    GuildOwnerID: string;
-    CreatedAt: Date;
-    Prefix: string;
+    guildID: string;
+    guildName: string;
+    guildOwnerID: string;
+    createdAt: Date;
+    prefix: string;
 }
 
 export {
     GuildSchema
-}
+};

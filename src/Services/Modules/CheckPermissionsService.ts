@@ -46,7 +46,7 @@ export default class checkPermissionsService extends ServiceStructure {
             return true;
         } catch (err) {
             Logger.error((err as Error).message, checkPermissionsService.name);
-            Logger.warn((err as Error).stack as string, checkPermissionsService.name);
+            Logger.warn((err as Error).stack, checkPermissionsService.name);
         }
     }
 }

@@ -28,11 +28,11 @@ export default class DatabaseService extends ServiceStructure {
                 Database.createTables();
             } catch (err) {
                 Logger.error((err as Error).message, DatabaseService.name);
-                Logger.warn((err as Error).stack as string, DatabaseService.name);
+                Logger.warn((err as Error).stack, DatabaseService.name);
             }
         } catch (err) {
             Logger.error((err as Error).message, DatabaseService.name);
-            Logger.warn((err as Error).stack as string, DatabaseService.name);
+            Logger.warn((err as Error).stack, DatabaseService.name);
         }
     }
 }

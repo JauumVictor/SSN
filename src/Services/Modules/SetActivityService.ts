@@ -29,7 +29,7 @@ export default class setActivityService extends ServiceStructure {
             Logger.info(`${this.controller.discord.user?.username} presence has been successfully set.`, 'Presence');
         } catch (err) {
             Logger.error((err as Error).message, setActivityService.name);
-            Logger.warn((err as Error).stack as string, setActivityService.name);
+            Logger.warn((err as Error).stack, setActivityService.name);
         }
     }
 }

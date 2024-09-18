@@ -24,7 +24,7 @@ export default class inviteCreateListener extends ListenerStructure {
             }
         } catch (err) {
             Logger.error((err as Error).message, inviteCreateListener.name);
-            Logger.warn((err as Error).stack as string, inviteCreateListener.name);
+            Logger.warn((err as Error).stack, inviteCreateListener.name);
         }
     }
 }

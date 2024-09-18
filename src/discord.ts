@@ -7,12 +7,12 @@ import { Database } from './database/Database';
 type DataType = 'user' | 'guild' | 'client' | 'command';
 
 export class DiscordBot extends Client {
-    public readonly developers: ReadonlyArray<string> = Object.freeze([process.env.OWNER_ID]);
-    public readonly commands: Collection<string, CommandStructure> = new Collection();
-    public readonly cooldowns: Collection<string, Collection<Snowflake, number>> = new Collection();
-    public readonly services: Collection<string, ServiceStructure> = new Collection();
-    public invites: Collection<string, Collection<string, Invite>> = new Collection();
-    public codeUses: Collection<string, Invite> = new Collection();
+    public readonly developers: readonly string[] = Object.freeze([process.env.OWNER_ID]);
+    public readonly commands = new Collection<string, CommandStructure>();
+    public readonly cooldowns = new Collection<string, Collection<Snowflake, number>>();
+    public readonly services = new Collection<string, ServiceStructure>();
+    public invites = new Collection<string, Collection<string, Invite>>();
+    public codeUses = new Collection<string, Invite>();
     public connection!: Connection;
 
     public constructor(options: ClientOptions) {
@@ -22,8 +22,8 @@ export class DiscordBot extends Client {
     public async initialize() {
         await super.login(process.env.CLIENT_TOKEN);
 
-        process.on('uncaughtException', (err: Error) => Logger.error((err as Error).stack as string, 'uncaughtException'));
-        process.on('unhandledRejection', (err: Error) => Logger.error((err as Error).stack as string, 'unhandledRejection'));
+        process.on('uncaughtException', (err: Error) => { Logger.error((err).stack, 'uncaughtException'); });
+        process.on('unhandledRejection', (err: Error) => { Logger.error((err).stack, 'unhandledRejection'); });
     }
 
     public async getData<T extends DataType>(

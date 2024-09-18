@@ -36,7 +36,7 @@ export default class readyListener extends ListenerStructure {
             Logger.info(`${this.controller.discord.user?.username} has been loaded completely.`, 'Ready');
         } catch (err) {
             Logger.error((err as Error).message, readyListener.name);
-            Logger.warn((err as Error).stack as string, readyListener.name);
+            Logger.warn((err as Error).stack, readyListener.name);
         }
     }
 }

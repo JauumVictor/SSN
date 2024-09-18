@@ -19,7 +19,7 @@ export default class AddEmojiCommand extends CommandStructure {
         for (const emoji of args) {
             const customEmoji = parseEmoji(emoji);
 
-            if (customEmoji && customEmoji.id) {
+            if (customEmoji?.id) {
                 const link = `https://cdn.discordapp.com/emojis/${customEmoji.id}.${customEmoji.animated ? 'gif' : 'png'}`;
 
                 message.guild?.emojis.create({

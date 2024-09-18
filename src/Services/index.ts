@@ -35,7 +35,7 @@ export default class Services extends ModuleStructure {
             Logger.info('Services loaded successfully.', 'Services');
         } catch (err) {
             Logger.error((err as Error).message, Services.name);
-            Logger.warn((err as Error).stack as string, Services.name);
+            Logger.warn((err as Error).stack, Services.name);
         }
     }
 }

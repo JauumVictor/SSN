@@ -1,9 +1,9 @@
-import { Guild } from "discord.js";
-import { Connection } from "mysql2/promise";
-import { Logger } from "../utils/logger";
-import { join } from "node:path";
-import { readdirSync, readFileSync } from "node:fs";
-import { GuildSchema } from "../types/guildSchema";
+import { Guild } from 'discord.js';
+import { Connection } from 'mysql2/promise';
+import { Logger } from '../utils/logger';
+import { join } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { GuildSchema } from '../types/guildSchema';
 
 export class Database {
     private static connection: Connection;
@@ -39,7 +39,7 @@ export class Database {
             }
         } catch (err) {
             Logger.error((err as Error).message, [Database.name, Database.createGuild.name]);
-            Logger.warn((err as Error).stack as string, [Database.name, Database.createGuild.name]);
+            Logger.warn((err as Error).stack, [Database.name, Database.createGuild.name]);
 
             return null;
         }
@@ -55,7 +55,7 @@ export class Database {
             return true;
         } catch (err) {
             Logger.error((err as Error).message, [Database.name, Database.deleteGuild.name]);
-            Logger.warn((err as Error).stack as string, [Database.name, Database.deleteGuild.name]);
+            Logger.warn((err as Error).stack, [Database.name, Database.deleteGuild.name]);
 
             return false;
         }
@@ -73,7 +73,7 @@ export class Database {
             return rows[0][0] as GuildSchema;
         } catch (err) {
             Logger.error((err as Error).message, [Database.name, Database.getGuild.name]);
-            Logger.warn((err as Error).stack as string, [Database.name, Database.getGuild.name]);
+            Logger.warn((err as Error).stack, [Database.name, Database.getGuild.name]);
 
             return null;
         }
@@ -88,12 +88,12 @@ export class Database {
                     const sql = readFileSync(join('src', 'schemas', file), 'utf-8');
                     await Database.connection.query(sql);
                 })
-            )
+            );
 
             Logger.info('Tables created successfully!', [Database.name, Database.createTables.name]);
         } catch (err) {
             Logger.error((err as Error).message, [Database.name, Database.createTables.name]);
-            Logger.warn((err as Error).stack as string, [Database.name, Database.createTables.name]);
+            Logger.warn((err as Error).stack, [Database.name, Database.createTables.name]);
         }
     }
 }

@@ -48,23 +48,23 @@ export class BotLauncher {
         });
 
         this.telegramBot = new TelegramBot({
-            token: process.env.TELEGRAM_TOKEN,
+            token: process.env.TELEGRAM_TOKEN
         });
 
         this.botController = new SSN(this.discordBot, this.telegramBot);
     }
 
     public async initializeBots() {
-        Logger.warn("Inicializando os bots...", [BotLauncher.name, this.initializeBots.name]);
+        Logger.warn('Inicializando os bots...', [BotLauncher.name, this.initializeBots.name]);
 
         try {
             await this.discordBot.initialize();
             await this.telegramBot.initialize();
             await this.botController.start();
         } catch (error) {
-            Logger.error("Erro ao inicializar os bots: " + error, [BotLauncher.name, this.initializeBots.name]);
+            Logger.error('Erro ao inicializar os bots: ' + error, [BotLauncher.name, this.initializeBots.name]);
         } finally {
-            Logger.info("Bots inicializados com sucesso!", [BotLauncher.name, this.initializeBots.name]);
+            Logger.info('Bots inicializados com sucesso!', [BotLauncher.name, this.initializeBots.name]);
         }
     }
 }

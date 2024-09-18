@@ -1,7 +1,7 @@
 import { SSN } from '../../ssn';
 import { CommandStructure, ClientEmbed } from '../../structures';
 import { AvatarCommandData } from '../../Data/Commands/Utilities/AvatarCommandData';
-import { Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, OmitPartialGroupDMChannel } from 'discord.js';
+import { Message, ActionRowBuilder, ButtonBuilder, ButtonStyle, OmitPartialGroupDMChannel } from 'discord.js';
 
 export default class avatarCommand extends CommandStructure {
     constructor(controller: SSN) {
@@ -12,7 +12,7 @@ export default class avatarCommand extends CommandStructure {
         const user = message.mentions?.users.first() || await this.controller.discord.users.fetch(args[0]).catch(() => undefined) || message.author;
 
         if (args[0] == 'avatar') {
-            const member = message.guild?.members.cache.get(user.id) as GuildMember;
+            const member = message.guild?.members.cache.get(user.id)!;
             const avatar = member.displayAvatarURL({ extension: 'png', size: 4096 });
 
             const embed = new ClientEmbed(true, this.controller.discord)

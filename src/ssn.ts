@@ -1,10 +1,10 @@
-import { readdirSync } from "fs";
-import { DiscordBot } from "./discord";
-import { TelegramBot } from "./telegram";
-import { Logger } from "./utils/logger";
-import { join } from "path";
-import { CommandStructure, ListenerStructure, TelegramListenerStructure } from "./structures";
-import { RegisterSlashCommands } from "../registerSlash";
+import { readdirSync } from 'fs';
+import { DiscordBot } from './discord';
+import { TelegramBot } from './telegram';
+import { Logger } from './utils/logger';
+import { join } from 'path';
+import { CommandStructure, ListenerStructure, TelegramListenerStructure } from './structures';
+import { RegisterSlashCommands } from '../registerSlash';
 
 export class SSN {
     constructor(public discord: DiscordBot, public telegram: TelegramBot) {

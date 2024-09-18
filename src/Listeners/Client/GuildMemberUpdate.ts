@@ -52,7 +52,7 @@ export default class guildMemberUpdateEvent extends ListenerStructure {
             }
         } catch (err) {
             Logger.error((err as Error).message, guildMemberUpdateEvent.name);
-            Logger.warn((err as Error).stack as string, guildMemberUpdateEvent.name);
+            Logger.warn((err as Error).stack, guildMemberUpdateEvent.name);
         }
     }
 }

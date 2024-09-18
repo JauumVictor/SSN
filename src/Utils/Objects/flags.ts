@@ -1,8 +1,4 @@
-interface FlagText {
-    [flag: string]: {
-        [language: string]: string;
-    };
-}
+type FlagText = Record<string, Record<string, string>>;
 
 enum Language {
     PT_BR = 'pt-BR',

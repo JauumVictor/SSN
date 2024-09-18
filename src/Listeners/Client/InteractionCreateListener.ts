@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, Collection, Events, GuildMember, Interaction, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessagePayload, MessageResolvable, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionType, Collection, Events, Interaction, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessagePayload, MessageResolvable, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
 import { SSN } from '../../ssn';
 import { ClientEmbed, ListenerStructure } from '../../structures';
 import { Logger } from '../../utils/logger';
@@ -16,13 +16,14 @@ export default class interactionCreateListener extends ListenerStructure {
 
             //===============> Módulo de tradução <===============//
 
-            const prefix = process.env.PREFIX;
+            const guildData = await this.controller.discord.getData(interaction.guild.id, 'guild');
+            const prefix = guildData?.prefix ?? process.env.PREFIX;
             const args: string[] = [];
 
             //===============> Comandos <===============//
 
             if (interaction.isCommand() || interaction.isContextMenuCommand()) {
-                if (!(interaction.channel as TextChannel).permissionsFor(interaction.guild.members.me as GuildMember).has(PermissionFlagsBits.SendMessages)) {
+                if (!(interaction.channel as TextChannel).permissionsFor(interaction.guild.members.me!).has(PermissionFlagsBits.SendMessages)) {
                     return void interaction.reply({ content: `${interaction.user}, não possuo permissões de \`Enviar Mensagens\` neste servidor, contate um administrador.`, ephemeral: true });
                 }
 
@@ -99,7 +100,7 @@ export default class interactionCreateListener extends ListenerStructure {
                             author: interaction.user,
                             reply: async (options: string | MessagePayload | InteractionReplyOptions) => await interaction.followUp(options).catch(console.error),
                             edit: async (options: string | MessagePayload | InteractionEditReplyOptions) => await interaction.editReply(options).catch(console.error),
-                            delete: async (message?: MessageResolvable) => await interaction.deleteReply(message)
+                            delete: async (message?: MessageResolvable) => { await interaction.deleteReply(message); }
                         }) as unknown as OmitPartialGroupDMChannel<Message>;
 
                         //===============> Checando permissões dos membros e do cliente:
@@ -130,7 +131,7 @@ export default class interactionCreateListener extends ListenerStructure {
 
                             if (errorChannel) {
                                 const errorEmbed = new ClientEmbed(true, this.controller.discord)
-                                    .setTitle(`${command.data.options.name}`)
+                                    .setTitle(command.data.options.name)
                                     .setDescription('```js' + '\n' + err.stack + '\n' + '```');
 
                                 errorChannel.send({ embeds: [errorEmbed] });
@@ -140,7 +141,7 @@ export default class interactionCreateListener extends ListenerStructure {
                         });
                     } catch (err) {
                         Logger.error((err as Error).message, interactionCreateListener.name);
-                        Logger.warn((err as Error).stack as string, interactionCreateListener.name);
+                        Logger.warn((err as Error).stack, interactionCreateListener.name);
                     }
                 }
             }
@@ -148,7 +149,7 @@ export default class interactionCreateListener extends ListenerStructure {
             //==============================================//
         } catch (err) {
             Logger.error((err as Error).message, interactionCreateListener.name);
-            return Logger.warn((err as Error).stack as string, interactionCreateListener.name);
+            Logger.warn((err as Error).stack, interactionCreateListener.name); return;
         }
     }
 }

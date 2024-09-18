@@ -1,5 +1,5 @@
 import { ModuleStructure } from '../structures';
-import { ChannelType, GuildMember, Message, OmitPartialGroupDMChannel, PermissionFlagsBits } from 'discord.js';
+import { ChannelType, Message, OmitPartialGroupDMChannel, PermissionFlagsBits } from 'discord.js';
 import { Logger } from '../utils/logger';
 import { SSN } from '../ssn';
 
@@ -11,7 +11,7 @@ export default class inviteModule extends ModuleStructure {
     async moduleExecute(message: OmitPartialGroupDMChannel<Message>) {
         try {
             if (message.guild && message.channel.type === ChannelType.GuildText) {
-                if (message.channel?.permissionsFor(message.guild.members.me as GuildMember).has(PermissionFlagsBits.ManageGuild)) {
+                if (message.channel?.permissionsFor(message.guild.members.me!).has(PermissionFlagsBits.ManageGuild)) {
                     const regex = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|(discord|discordapp)\.com\/invite)\/.+[a-z]/g;
                     const invites = await message.guild.invites.fetch();
                     const filter = invites.filter(i => i.inviter);
@@ -34,7 +34,7 @@ export default class inviteModule extends ModuleStructure {
             }
         } catch (err) {
             Logger.error((err as Error).message, inviteModule.name);
-            Logger.warn((err as Error).stack as string, inviteModule.name);
+            Logger.warn((err as Error).stack, inviteModule.name);
         }
     }
 }

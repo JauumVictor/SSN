@@ -1,23 +1,27 @@
 {
   "name": "ssn-bot",
   "version": "0.0.1",
-  "main": "dist/Launcher.js",
+  "main": "dist/launcher.js",
   "license": "MIT",
-  "repository": "https://github.com/JauumVictor/SSN.git",
+  "repository": "https://github.com/itsryu/SSN",
   "author": {
-    "name": "ryuzaki#0001",
-    "url": "https://github.com/JauumVictor/"
+    "name": "itsryu",
+    "url": "https://github.com/itsryu/"
   },
   "engines": {
-    "node": "x.x",
-    "npm": "9.x"
+    "node": "^18 || >=19.0.0",
+    "npm": "^9 || >=10.0.0"
   },
   "scripts": {
-    "build": "npx tsc --project tsconfig.json --pretty --noEmitOnError && echo Arquivos compilados com sucesso!",
-    "clean": "rmdir /s /q dist",
-    "start": "node dist/Launcher.js",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "watch": "tsc -watch",
+    "build": "tsc --project tsconfig.json --pretty --noEmitOnError",
+    "clean-win": "rmdir /s /q dist",
+    "clean-lin": "rm -rf dist",
+    "dev:start": "node dist/launcher.js",
+    "prod:start": "pm2 start dist/launcher.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest"
   },
   "dependencies": {
     "discord.js": "^14.16.2",
@@ -28,11 +32,18 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@jest/globals": "^29.7.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/jest": "^29.5.13",
     "@types/ms": "^0.7.34",
     "@types/node": "^22.5.5",
     "@typescript-eslint/eslint-plugin": "^8.6.0",
     "@typescript-eslint/parser": "^8.6.0",
     "eslint": "^9.10.0",
-    "typescript": "^5.6.2"
+    "eslint-plugin-jest": "^28.8.3",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.6.0"
   }
 }

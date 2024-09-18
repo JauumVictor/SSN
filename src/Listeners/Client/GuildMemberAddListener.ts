@@ -29,7 +29,7 @@ export default class GuildMemberAddListener extends ListenerStructure {
                         if (cachedInvites) {
                             const usedInvite = newInvites.find((inv) => {
                                 const invite = cachedInvites.get(inv.code);
-                                return invite && invite.uses && inv.uses ? invite.uses < inv.uses : false;
+                                return invite?.uses && inv.uses ? invite.uses < inv.uses : false;
                             });
 
                             const embed = new ClientEmbed(true, this.controller.discord)
@@ -57,7 +57,7 @@ export default class GuildMemberAddListener extends ListenerStructure {
             }
         } catch (err) {
             Logger.error((err as Error).message, GuildMemberAddListener.name);
-            Logger.warn((err as Error).stack as string, GuildMemberAddListener.name);
+            Logger.warn((err as Error).stack, GuildMemberAddListener.name);
         }
     }
 }

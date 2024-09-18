@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS Guilds (
-    GuildID VARCHAR(100) NOT NULL,
-    GuildName VARCHAR(100) NOT NULL,
-    GuildOwnerID VARCHAR(100) NOT NULL,
-    CreatedAt DATETIME NOT NULL,
+    guildID VARCHAR(100) NOT NULL,
+    guildName VARCHAR(100) NOT NULL,
+    guildOwnerID VARCHAR(100) NOT NULL,
+    createdAt DATETIME NOT NULL,
     PRIMARY KEY (GuildID)
 );

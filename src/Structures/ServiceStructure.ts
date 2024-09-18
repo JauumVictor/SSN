@@ -1,12 +1,12 @@
 import { SSN } from '../ssn';
 
-type RawServiceData = {
+interface RawServiceData {
     name: string;
     initialize: boolean;
     amount?: number;
     interval?: number;
     wait?: number;
-};
+}
 
 export abstract class ServiceStructure {
     controller: SSN;
