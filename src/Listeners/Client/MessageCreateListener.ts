@@ -16,7 +16,8 @@ export default class messageCreateListener extends ListenerStructure {
         if (message.author.bot || !message.guild) return;
 
         try {
-            const prefix = process.env.PREFIX;
+            const guildData = await this.controller.discord.getData(message.guild.id, 'guild');
+            const prefix = guildData?.Prefix ?? process.env.PREFIX;
 
             //===============> Menções <===============//
 

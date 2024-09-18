@@ -2,6 +2,7 @@ import { createConnection } from 'mysql2/promise';
 import { SSN } from '../../ssn';
 import { ServiceStructure } from '../../structures';
 import { Logger } from '../../utils/logger';
+import { Database } from '../../database/Database';
 
 export default class DatabaseService extends ServiceStructure {
     constructor(controller: SSN) {
@@ -11,20 +12,24 @@ export default class DatabaseService extends ServiceStructure {
         });
     }
 
-    serviceExecute() {
+    async serviceExecute() {
         try {
-            createConnection({
+            this.controller.discord.connection = await createConnection({
                 user: process.env.MYSQL_USER,
                 password: process.env.MYSQL_PASSWORD,
-            })
-                .then((connection) => {
-                    this.controller.discord.connection = connection;
-                    Logger.info('Database connection established!', DatabaseService.name);
-                })
-                .catch((err) => {
-                    Logger.error((err as Error).message, DatabaseService.name);
-                    Logger.warn((err as Error).stack as string, DatabaseService.name);
-                 });
+                database: process.env.MYSQL_DATABASE,
+                host: process.env.MYSQL_HOST
+            });
+
+            Database.connect(this.controller.discord.connection);
+            Logger.info('Database connection established!', DatabaseService.name);
+
+            try {
+                Database.createTables();
+            } catch (err) {
+                Logger.error((err as Error).message, DatabaseService.name);
+                Logger.warn((err as Error).stack as string, DatabaseService.name);
+            }
         } catch (err) {
             Logger.error((err as Error).message, DatabaseService.name);
             Logger.warn((err as Error).stack as string, DatabaseService.name);
