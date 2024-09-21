@@ -3,14 +3,14 @@ import { TelegramListenerStructure } from '../../structures';
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, MessageComponentInteraction, TextChannel } from 'discord.js';
 import { SSN } from '../../ssn';
 
-export default class MessageListener extends TelegramListenerStructure {
+export default class TelegramMessageListener extends TelegramListenerStructure {
     constructor(controller: SSN) {
         super(controller, {
             name: 'message'
         });
     }
 
-    async eventExecute(message: MessageContext) {
+    async eventExecute(message: MessageContext): Promise<void> {
         const channel = this.controller.discord.channels.cache.get('1146630192719200356') as TextChannel;
 
         const { text, photo, attachment } = message;

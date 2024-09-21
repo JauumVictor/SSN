@@ -1,5 +1,5 @@
 import { SSN } from '../../ssn';
-import { flagTexts, FlagKey } from '../../utils/Objects/flags';
+import { flagTexts, FlagKey } from '../../utils/objects/flags';
 import { ServiceStructure, ClientEmbed, CommandStructure } from '../../structures';
 import { Message, PermissionsBitField } from 'discord.js';
 import { Logger } from '../../utils/logger';

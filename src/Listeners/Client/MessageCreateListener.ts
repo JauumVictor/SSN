@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Collection, Colors, Events, GuildChannel, Message, OmitPartialGroupDMChannel, PermissionFlagsBits, TextChannel } from 'discord.js';
 import { SSN } from '../../ssn';
 import { ClientEmbed, ListenerStructure } from '../../structures';
-import { emojis } from '../../utils/Objects/emojis';
+import { emojis } from '../../utils/objects/emojis';
 import { Logger } from '../../utils/logger';
 import { Util } from '../../utils/util';
 
@@ -53,7 +53,7 @@ export default class messageCreateListener extends ListenerStructure {
 
             if (message.content.startsWith(prefix)) {
                 const [name, ...args] = message.content.slice(prefix.length).trim().split(/ +/g);
-                const command = this.controller.discord.commands.get(name) || this.controller.discord.commands.find((command) => command.data.options.aliases && command.data.options.aliases.includes(name));
+                const command = this.controller.discord.commands.get(name) ?? this.controller.discord.commands.find((command) => command.data.options.aliases && command.data.options.aliases.includes(name));
 
                 if (!command) {
                     if (message.content === prefix) return;

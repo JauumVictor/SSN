@@ -62,14 +62,17 @@ export class BotLauncher {
             await this.telegramBot.initialize();
             await this.botController.start();
         } catch (error) {
-            Logger.error('Erro ao inicializar os bots: ' + error, [BotLauncher.name, this.initializeBots.name]);
+            Logger.error('Erro ao inicializar os bots: ' + (error as Error).message, [BotLauncher.name, this.initializeBots.name]);
         } finally {
             Logger.info('Bots inicializados com sucesso!', [BotLauncher.name, this.initializeBots.name]);
         }
     }
 }
 
-(async() => {
+(async () => {
     const launcher = new BotLauncher();
     await launcher.initializeBots();
-})();
+})()
+    .catch((error: unknown) => {
+        Logger.error((error as Error).message, [BotLauncher.name]);
+    });

@@ -2,7 +2,8 @@ import { Client, Collection, Snowflake, Invite, ClientOptions } from 'discord.js
 import { CommandStructure, ServiceStructure } from './structures';
 import { Logger } from './utils/logger';
 import { Connection } from 'mysql2/promise';
-import { Database } from './database/Database';
+import { Database } from './database/database';
+import { RegisterSlashCommands } from '../registerSlash';
 
 type DataType = 'user' | 'guild' | 'client' | 'command';
 
@@ -21,26 +22,24 @@ export class DiscordBot extends Client {
 
     public async initialize() {
         await super.login(process.env.CLIENT_TOKEN);
+        await RegisterSlashCommands.registerSlash(this);
 
         process.on('uncaughtException', (err: Error) => { Logger.error((err).stack, 'uncaughtException'); });
         process.on('unhandledRejection', (err: Error) => { Logger.error((err).stack, 'unhandledRejection'); });
     }
 
-    public async getData<T extends DataType>(
-        id: string | undefined,
-        type: T
-    ) {
+    public async getData(id: string | undefined, type: DataType) {
         switch (type) {
             case 'guild': {
                 if (id) {
                     const guild = await this.guilds.fetch(id).catch(() => undefined);
 
                     if (guild) {
-                        let data = await Database.getGuild(guild.id);
+                        let data = await Database.guild.getGuild(guild.id);
 
                         try {
                             if (!data) {
-                                data = await Database.createGuild(guild);
+                                data = await Database.guild.createGuild(guild);
                             }
 
                             return data;

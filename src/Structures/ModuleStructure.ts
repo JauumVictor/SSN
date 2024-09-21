@@ -5,5 +5,5 @@ export abstract class ModuleStructure {
         this.controller = controller;
     }
 
-    abstract moduleExecute(...args: any[]): Promise<any> | any;
+    abstract moduleExecute(...args: any[]): Promise<unknown> | unknown;
 }

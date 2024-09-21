@@ -2,7 +2,7 @@ import { Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { SSN } from '../../ssn';
 import { TestCommandData } from '../../Data/Commands/Developers/TestCommandData';
 import { CommandStructure } from '../../structures';
-import { rulesEmbed, rulesEmbedFooter } from '../../utils/Objects/embeds';
+import { rulesEmbed, rulesEmbedFooter } from '../../utils/objects/embeds';
 
 export default class avatarCommand extends CommandStructure {
     constructor(controller: SSN) {

@@ -17,5 +17,5 @@ export abstract class ServiceStructure {
         this.data = data;
     }
 
-    abstract serviceExecute(...args: any[]): Promise<any> | any;
+    abstract serviceExecute(...args: any[]): Promise<unknown> | unknown;
 }
